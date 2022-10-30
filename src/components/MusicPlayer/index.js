@@ -1,18 +1,7 @@
 import {Component} from 'react'
-import MusicItem from '../MusicItem'
-
-import {
-  BgContainer,
-  ArtistBg,
-  ArtistName,
-  ArtistInfo,
-  PlayListContainer,
-  PlayListHeading,
-  SearchInput,
-  MusicList,
-  EmptyContainer,
-  NoSongsText,
-} from './styledComponents'
+import {BsSearch} from 'react-icons/bs'
+import SongDetails from '../SongDetails'
+import './index.css'
 
 const initialTracksList = [
   {
@@ -97,67 +86,74 @@ const initialTracksList = [
   },
 ]
 
-class MusicPlayList extends Component {
+class MusicPlayer extends Component {
   state = {
     searchInput: '',
-    playList: initialTracksList,
+    songsList: initialTracksList,
+  }
+
+  onClickDelete = id => {
+    const {songsList} = this.state
+    const updatedList = songsList.filter(eachItem => eachItem.id !== id)
+
+    this.setState({
+      songsList: updatedList,
+    })
   }
 
   onChangeSearchInput = event => {
-    this.setState({searchInput: event.target.value})
+    this.setState({
+      searchInput: event.target.value,
+    })
   }
-
-  onClickDeleteTrack = id => {
-    const {playList} = this.state
-    const updatedPlayList = playList.filter(each => each.id !== id)
-    this.setState({playList: updatedPlayList})
-  }
-
-  renderNoSongsFoundView = () => (
-    <EmptyContainer>
-      <NoSongsText>No Songs Found</NoSongsText>
-    </EmptyContainer>
-  )
 
   render() {
-    const {playList, searchInput} = this.state
-    const searchResults = playList.filter(eachTrack =>
-      eachTrack.name.toLowerCase().includes(searchInput.toLowerCase()),
+    const {searchInput, songsList} = this.state
+    const searchResults = songsList.filter(eachSong =>
+      eachSong.name.toLowerCase().includes(searchInput.toLowerCase()),
     )
+    const songsListLength = searchResults.length < 1
     return (
-      <BgContainer>
-        <ArtistBg data-testid="artist-details">
-          <ArtistName>
-            Ed Sheeran
-            <br />
-            <ArtistInfo>Singer</ArtistInfo>
-          </ArtistName>
-        </ArtistBg>
-        <PlayListContainer>
-          <PlayListHeading>Songs Playlist</PlayListHeading>
-          <SearchInput
-            type="search"
-            value={searchInput}
-            placeholder="Search"
-            onChange={this.onChangeSearchInput}
-          />
-        </PlayListContainer>
-        {searchResults.length === 0 ? (
-          this.renderNoSongsFoundView()
-        ) : (
-          <MusicList>
-            {searchResults.map(eachItem => (
-              <MusicItem
-                key={eachItem.id}
-                MusicItemDetails={eachItem}
-                onClickDeleteTrack={this.onClickDeleteTrack}
-              />
-            ))}
-          </MusicList>
-        )}
-      </BgContainer>
+      <div className="container">
+        <div className="music-player-image-container">
+          <h1 className="singer-heading">Ed Sheeran</h1>
+          <p className="profession">Singer</p>
+        </div>
+        <div className="bottom-container">
+          <div className="songs-main-container">
+            <div className="playlist-and-search-container">
+              <h1 className="playlist-heading">Songs Playlist</h1>
+              <div className="search-container">
+                <input
+                  type="search"
+                  className="input-box"
+                  placeholder="Search"
+                  value={searchInput}
+                  onChange={this.onChangeSearchInput}
+                />
+                <BsSearch className="search-icon" />
+              </div>
+            </div>
+            {songsListLength ? (
+              <div className="no-songs-container">
+                <p className="no-songs-heading">No Songs Found</p>
+              </div>
+            ) : (
+              <ul className="songs-list">
+                {searchResults.map(eachSong => (
+                  <SongDetails
+                    key={eachSong.id}
+                    songDetails={eachSong}
+                    onClickDelete={this.onClickDelete}
+                  />
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
     )
   }
 }
 
-export default MusicPlayList
+export default MusicPlayer

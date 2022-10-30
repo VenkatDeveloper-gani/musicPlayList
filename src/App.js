@@ -1,7 +1,8 @@
-import MusicPlayList from './components/MusicPlayList'
-
+import MusicPlayer from './components/MusicPlayer'
 import './App.css'
 
-const App = () => <MusicPlayList />
+// Replace your code here
+
+const App = () => <MusicPlayer />
 
 export default App
